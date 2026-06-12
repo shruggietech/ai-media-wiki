@@ -4,7 +4,7 @@ description: ShruggieTech's internal reference for AI media tooling (ComfyUI, Ol
 # Branch build (publishing from main /docs) cannot use the just-the-docs gem
 # theme directly, so the theme loads through remote_theme instead.
 remote_theme: just-the-docs/just-the-docs@v0.12.0
-
+color_scheme: dark
 # --- EDIT THESE TWO LINES ---
 # `url` is your Pages root: https://<org-or-user>.github.io
 # `baseurl` is the repo name with a leading slash (this is a project site).
