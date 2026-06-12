@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+
+# Mirrors GitHub's branch-build environment so local preview matches production.
+# GitHub itself ignores this file on the branch build; it is only for running
+# `bundle exec jekyll serve` locally. Run it from inside the docs/ folder.
+gem "github-pages", group: :jekyll_plugins
+gem "webrick" # required for local serve on Ruby >= 3.0
