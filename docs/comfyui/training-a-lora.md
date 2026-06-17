@@ -7,7 +7,7 @@ nav_order: 6
 
 # Training a LoRA
 
-A LoRA is a small adapter that teaches the base checkpoint a specific subject, character, or style without retraining the whole model. It does not change the model you use itself, in our cases, Juggernaut XL Ragnarok. It loads alongside the checkpoint at generation time, adds tens of megabytes rather than gigabytes, and can be swapped or stacked per job. For ShruggieTech the main use is a persona identity: a reusable face and look that conditions output from owned, cleared training data, which is the commercial-clearable alternative to the non-commercial face-conditioning tools described under [Baseline Capabilities and Expansion]({% link comfyui/baseline-capabilities.md %}).
+A LoRA is a small adapter that teaches the base checkpoint a specific subject, character, or style without retraining the whole model. It does not change Juggernaut XL Ragnarok itself. It loads alongside the checkpoint at generation time, adds tens of megabytes rather than gigabytes, and can be swapped or stacked per job. For ShruggieTech the main use is a persona identity: a reusable face and look that conditions output from owned, cleared training data, which is the commercial-clearable alternative to the non-commercial face-conditioning tools described under [Baseline Capabilities and Expansion]({% link comfyui/baseline-capabilities.md %}).
 
 Training and generation are two separate stages. Training happens in a dedicated trainer (Kohya SS sd-scripts is the standard). The finished LoRA is then used inside ComfyUI. This page covers the SDXL path on the standard rig, with a character or persona LoRA as the primary example. The principles carry over to style and concept LoRAs.
 
@@ -60,6 +60,43 @@ Treat these as starting points to validate by test renders, not fixed values. Th
 - Resolution: 1024 x 1024 with bucketing enabled.
 - UNet only: train the UNet only for SDXL, which avoids erratic results from the model's dual text encoders.
 
+## Step-by-step: training on the 2080 Ti
+
+This is the local procedure on the standard rig (RTX 2080 Ti, 11 GB). The 11 GB card sits below the practical SDXL training floor, so the memory settings in step 5 are required rather than optional, and a run is slow. Treat the rig as dedicated for the duration. Training saturates the GPU, so close ComfyUI and anything else holding VRAM before starting.
+
+Base model note: train against stock SDXL 1.0 base, not Juggernaut XL Ragnarok. Training on a stylized checkpoint bleeds that checkpoint's look into the LoRA. A LoRA trained on the SDXL base stays portable and loads cleanly onto Juggernaut at generation time (see [Using the LoRA in ComfyUI](#using-the-lora-in-comfyui)).
+
+1. Install the trainer.
+   Install Kohya SS (the bmaltais sd-scripts GUI) from its repository, run its setup script, and launch the GUI. Confirm an SDXL 1.0 base checkpoint is present locally to train against.
+
+2. Lay out the dataset folder.
+   Kohya expects a specific structure. Create a parent folder, and inside it one image subfolder named `<repeats>_<token> <class>`, for example `10_persona person`. Place the training images there, each with a matching `.txt` caption file of the same name (see Dataset and Captioning above). Regularization images are optional and add training time, so skip them for a single persona on this rig.
+
+3. Set the base configuration.
+   In the GUI, enable SDXL mode and select the SDXL 1.0 base checkpoint. Set LoRA type to Standard. Point the output folder somewhere outside the dataset folder.
+
+4. Set the network size.
+   Network rank 16 to 32, alpha at half the rank. Rank drives file size and capacity more than VRAM. 32 is ample for a persona, and 16 trims the footprint further. See Training parameters above for the reasoning.
+
+5. Apply the 11 GB memory settings (required on this rig).
+   - Train the UNet only (`--network_train_unet_only`). Do not train the text encoders.
+   - Optimizer: Adafactor, with the fused backward pass enabled. This pairing is the main reason SDXL fits in 11 GB. Optimizer args: `scale_parameter=False relative_step=False warmup_init=False`.
+   - Mixed precision: fp16. The 2080 Ti is a Turing card with no native bf16, so fp16 is the correct choice here, not bf16. Set save precision to fp16 as well.
+   - Enable gradient checkpointing.
+   - Cache latents, and cache latents to disk.
+   - Cache text encoder outputs (safe here because the text encoders are frozen).
+   - Enable memory-efficient attention (xformers or sdpa).
+   - Train batch size: 1.
+
+6. Set resolution and run length.
+   Max resolution 1024 x 1024 with bucketing enabled. Set repeats and epochs so total steps land near 4000 to 5000 (steps = images x repeats x epochs, at batch size 1). Save the LoRA every few epochs rather than only at the end, and enable sample image generation so progress is visible mid-run.
+
+7. Launch and monitor.
+   Start the run and watch VRAM at the first step, which is where an out-of-memory failure appears. If it runs out of memory, confirm UNet-only, gradient checkpointing, and cache-latents-to-disk are all on, then lower the network rank, and lower the resolution only as a last resort. Budget a few hours and run when the rig is otherwise idle.
+
+8. Collect and test.
+   The trainer writes `.safetensors` files (one per saved epoch) to the output folder. Move the chosen file into ComfyUI and test it following Using the LoRA in ComfyUI below. Test several saved epochs, not only the last, per Validation and overfitting.
+
 ## Validation and overfitting
 
 - Save the LoRA at multiple points across training, not just the final step, and test each one. The best epoch is often not the last.
@@ -70,7 +107,7 @@ Treat these as starting points to validate by test renders, not fixed values. Th
 ## Using the LoRA in ComfyUI
 
 - Place the trained `.safetensors` file in `models/loras`.
-- Add a LoraLoader node between the CheckpointLoader and the sampler, feeding the same Juggernaut XL Ragnarok base it was trained against.
+- Add a LoraLoader node between the CheckpointLoader and the sampler, feeding the Juggernaut XL Ragnarok base used for generation. An SDXL LoRA trained on the SDXL 1.0 base loads onto Juggernaut without modification, because SDXL LoRAs carry across SDXL checkpoints.
 - Include the trigger token in the positive prompt to activate the learned subject.
 - Strength: start near 0.7 to 1.0 and tune. Lower strength loosens adherence and allows more prompt freedom; higher strength locks the identity harder at the cost of flexibility.
 - LoRAs stack, but each added LoRA competes for influence and for VRAM headroom against the 11 GB ceiling. Keep stacks minimal, in line with the single-operator, minimal-touchpoint design.
