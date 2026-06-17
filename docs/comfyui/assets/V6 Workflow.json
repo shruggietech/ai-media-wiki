@@ -1,0 +1,1150 @@
+{
+  "id": "e7e6fe16-d877-4c93-a1fc-f5c590a3d596",
+  "revision": 0,
+  "last_node_id": 21,
+  "last_link_id": 34,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        40,
+        400
+      ],
+      "size": [
+        320,
+        98
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "slot_index": 1,
+          "links": [
+            2,
+            3,
+            29
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "slot_index": 2,
+          "links": [
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "juggernautXL_ragnarokBy.safetensors"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "EmptyLatentImage",
+      "pos": [
+        40,
+        560
+      ],
+      "size": [
+        315,
+        106
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            7
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1
+      ]
+    },
+    {
+      "id": 9,
+      "type": "KSampler",
+      "pos": [
+        2200,
+        200
+      ],
+      "size": [
+        315,
+        262
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 10
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 33
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 12
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "KSampler - Pass 2 (Hires Refine)",
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        156680208700286,
+        "fixed",
+        18,
+        6,
+        "dpmpp_2m",
+        "karras",
+        0.45
+      ]
+    },
+    {
+      "id": 13,
+      "type": "VAEDecode",
+      "pos": [
+        2560,
+        200
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 13
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "UpscaleModelLoader",
+      "pos": [
+        2560,
+        300
+      ],
+      "size": [
+        315,
+        58
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "UPSCALE_MODEL",
+          "type": "UPSCALE_MODEL",
+          "slot_index": 0,
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UpscaleModelLoader"
+      },
+      "widgets_values": [
+        "4x-UltraSharp.pth"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "ImageUpscaleWithModel",
+      "pos": [
+        2920,
+        200
+      ],
+      "size": [
+        315,
+        66
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 16
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            17
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageUpscaleWithModel"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "KSampler",
+      "pos": [
+        1480,
+        200
+      ],
+      "size": [
+        315,
+        262
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 32
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "KSampler - Pass 1",
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        156680208700286,
+        "fixed",
+        28,
+        6,
+        "dpmpp_2m",
+        "karras",
+        1
+      ]
+    },
+    {
+      "id": 8,
+      "type": "LatentUpscale",
+      "pos": [
+        1840,
+        200
+      ],
+      "size": [
+        315,
+        130
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "Upscale Latent (Hires Fix)",
+      "properties": {
+        "Node name for S&R": "LatentUpscale"
+      },
+      "widgets_values": [
+        "bislerp",
+        1536,
+        1536,
+        "disabled"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "OllamaConnectivityV2",
+      "pos": [
+        40,
+        180
+      ],
+      "size": [
+        420,
+        154
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "connection",
+          "type": "OLLAMA_CONNECTIVITY",
+          "slot_index": 0,
+          "links": [
+            23,
+            25
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "OllamaConnectivityV2"
+      },
+      "widgets_values": [
+        "http://127.0.0.1:11434",
+        "llama3.1:8b",
+        5,
+        "minutes",
+        null
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1010,
+        80
+      ],
+      "size": [
+        425,
+        180
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Scene Variation (from Ollama)",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        ""
+      ]
+    },
+    {
+      "id": 18,
+      "type": "OllamaGenerateV2",
+      "pos": [
+        500,
+        410
+      ],
+      "size": [
+        460,
+        294
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "connectivity",
+          "shape": 7,
+          "type": "OLLAMA_CONNECTIVITY",
+          "link": 25
+        },
+        {
+          "name": "options",
+          "shape": 7,
+          "type": "OLLAMA_OPTIONS",
+          "link": 28
+        },
+        {
+          "name": "images",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "context",
+          "shape": 7,
+          "type": "OLLAMA_CONTEXT",
+          "link": null
+        },
+        {
+          "name": "meta",
+          "shape": 7,
+          "type": "OLLAMA_META",
+          "link": null
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "STRING",
+          "slot_index": 0,
+          "links": [
+            26
+          ]
+        },
+        {
+          "name": "thinking",
+          "type": "STRING",
+          "slot_index": 1,
+          "links": []
+        },
+        {
+          "name": "context",
+          "type": "OLLAMA_CONTEXT",
+          "slot_index": 2,
+          "links": []
+        },
+        {
+          "name": "meta",
+          "type": "OLLAMA_META",
+          "slot_index": 3,
+          "links": []
+        }
+      ],
+      "title": "Negative Prompt Builder (Ollama)",
+      "properties": {
+        "Node name for S&R": "OllamaGenerateV2"
+      },
+      "widgets_values": [
+        "You write ONLY the negative prompt for SDXL photorealistic image generation. The user gives a short concept in plain casual language. NEVER list the user's main subject, or any synonym of it, as a negative. If the subject is a mouse, never output mouse, rodent, or similar. Output a single comma-separated list of things that should NOT appear: common quality and anatomy defects (blurry, out of focus, deformed, mutated, disfigured, bad anatomy, bad proportions, extra limbs, fused fingers, missing fingers, watermark, signature, text, logo, low quality, low resolution, jpeg artifacts, noise, oversaturated, overexposed, underexposed) and non-photographic styles (cartoon, anime, illustration, painting, drawing, 3d render, cgi, plastic looking, doll-like, toy). You may add a few defects relevant to the scene, but never the subject itself. Output ONLY comma-separated tags. No preamble, no explanation, no markdown, no quotes, no line breaks.",
+        "",
+        false,
+        "text",
+        "text"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "OllamaOptionsV2",
+      "pos": [
+        40,
+        720
+      ],
+      "size": [
+        390,
+        754
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "options",
+          "type": "OLLAMA_OPTIONS",
+          "slot_index": 0,
+          "links": [
+            27,
+            28
+          ]
+        }
+      ],
+      "title": "Ollama Seed / Options (fix or randomize)",
+      "properties": {
+        "Node name for S&R": "OllamaOptionsV2"
+      },
+      "widgets_values": [
+        false,
+        0,
+        false,
+        0.1,
+        false,
+        5,
+        false,
+        2048,
+        false,
+        64,
+        false,
+        1.1,
+        true,
+        0.6,
+        true,
+        694065848,
+        "randomize",
+        false,
+        "",
+        false,
+        1,
+        false,
+        -1,
+        false,
+        40,
+        false,
+        0.9,
+        false,
+        0,
+        false
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1010,
+        540
+      ],
+      "size": [
+        425,
+        200
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 29
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            30
+          ]
+        }
+      ],
+      "title": "Subject Anchor (auto from your concept - do not edit)",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        ""
+      ]
+    },
+    {
+      "id": 21,
+      "type": "ConditioningConcat",
+      "pos": [
+        1460,
+        40
+      ],
+      "size": [
+        280,
+        80
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning_to",
+          "type": "CONDITIONING",
+          "link": 30
+        },
+        {
+          "name": "conditioning_from",
+          "type": "CONDITIONING",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            32,
+            33
+          ]
+        }
+      ],
+      "title": "Merge Subject + Scene",
+      "properties": {
+        "Node name for S&R": "ConditioningConcat"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1010,
+        300
+      ],
+      "size": [
+        425,
+        180
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 3
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            6,
+            12
+          ]
+        }
+      ],
+      "title": "Negative Prompt",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        ""
+      ]
+    },
+    {
+      "id": 16,
+      "type": "SaveImage",
+      "pos": [
+        3280,
+        200
+      ],
+      "size": [
+        315,
+        270
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 17
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage",
+        "save_metadata": false
+      },
+      "widgets_values": [
+        "%date:yyyy-MM-dd%/image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "OllamaGenerateV2",
+      "pos": [
+        500,
+        80
+      ],
+      "size": [
+        460,
+        294
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "connectivity",
+          "shape": 7,
+          "type": "OLLAMA_CONNECTIVITY",
+          "link": 23
+        },
+        {
+          "name": "options",
+          "shape": 7,
+          "type": "OLLAMA_OPTIONS",
+          "link": 27
+        },
+        {
+          "name": "images",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "context",
+          "shape": 7,
+          "type": "OLLAMA_CONTEXT",
+          "link": null
+        },
+        {
+          "name": "meta",
+          "shape": 7,
+          "type": "OLLAMA_META",
+          "link": null
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "STRING",
+          "slot_index": 0,
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "thinking",
+          "type": "STRING",
+          "slot_index": 1,
+          "links": []
+        },
+        {
+          "name": "context",
+          "type": "OLLAMA_CONTEXT",
+          "slot_index": 2,
+          "links": []
+        },
+        {
+          "name": "meta",
+          "type": "OLLAMA_META",
+          "slot_index": 3,
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "OllamaGenerateV2"
+      },
+      "widgets_values": [
+        "You generate ONLY the background and atmosphere details for a photorealistic image. The main subject is handled separately, so you must NOT name, describe, or imply any animal, person, creature, or main subject of any kind. Based on the user's plain-English concept, output a comma-separated list of scene and style tags only: environment and setting, background elements, season and weather, time of day, lighting (key light, fill, direction), color palette, atmosphere and mood, camera and lens, depth of field, and composition. Vary these creatively from one generation to the next. Output ONLY comma-separated tags. No subject nouns, no preamble, no explanation, no markdown, no quotes, no line breaks.",
+        "",
+        false,
+        "text",
+        "text"
+      ]
+    },
+    {
+      "id": 17,
+      "type": "PrimitiveNode",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        420.44296875,
+        88
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "links": [
+            22,
+            24,
+            34
+          ]
+        }
+      ],
+      "title": "Your Concept (plain English - this is what gets generated)",
+      "properties": {
+        "Run widget replace on values": false
+      },
+      "widgets_values": [
+        ""
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      7,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      1,
+      1,
+      4,
+      0,
+      "CLIP"
+    ],
+    [
+      3,
+      1,
+      1,
+      5,
+      0,
+      "CLIP"
+    ],
+    [
+      6,
+      5,
+      0,
+      7,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      7,
+      6,
+      0,
+      7,
+      3,
+      "LATENT"
+    ],
+    [
+      8,
+      7,
+      0,
+      8,
+      0,
+      "LATENT"
+    ],
+    [
+      9,
+      8,
+      0,
+      9,
+      3,
+      "LATENT"
+    ],
+    [
+      10,
+      1,
+      0,
+      9,
+      0,
+      "MODEL"
+    ],
+    [
+      12,
+      5,
+      0,
+      9,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      13,
+      9,
+      0,
+      13,
+      0,
+      "LATENT"
+    ],
+    [
+      14,
+      1,
+      2,
+      13,
+      1,
+      "VAE"
+    ],
+    [
+      15,
+      13,
+      0,
+      15,
+      1,
+      "IMAGE"
+    ],
+    [
+      16,
+      14,
+      0,
+      15,
+      0,
+      "UPSCALE_MODEL"
+    ],
+    [
+      17,
+      15,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      21,
+      2,
+      0,
+      4,
+      1,
+      "STRING"
+    ],
+    [
+      22,
+      17,
+      0,
+      2,
+      5,
+      "STRING"
+    ],
+    [
+      23,
+      10,
+      0,
+      2,
+      0,
+      "OLLAMA_CONNECTIVITY"
+    ],
+    [
+      24,
+      17,
+      0,
+      18,
+      5,
+      "STRING"
+    ],
+    [
+      25,
+      10,
+      0,
+      18,
+      0,
+      "OLLAMA_CONNECTIVITY"
+    ],
+    [
+      26,
+      18,
+      0,
+      5,
+      1,
+      "STRING"
+    ],
+    [
+      27,
+      19,
+      0,
+      2,
+      1,
+      "OLLAMA_OPTIONS"
+    ],
+    [
+      28,
+      19,
+      0,
+      18,
+      1,
+      "OLLAMA_OPTIONS"
+    ],
+    [
+      29,
+      1,
+      1,
+      20,
+      0,
+      "CLIP"
+    ],
+    [
+      30,
+      20,
+      0,
+      21,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      31,
+      4,
+      0,
+      21,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      32,
+      21,
+      0,
+      7,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      33,
+      21,
+      0,
+      9,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      34,
+      17,
+      0,
+      20,
+      1,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.1918176537727252,
+      "offset": [
+        247.50958607041943,
+        188.86939797557955
+      ]
+    },
+    "frontendVersion": "1.43.18",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}
